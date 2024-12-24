@@ -1,36 +1,23 @@
 .navbar {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #2e3440;
-  color: #eceff4;
-  padding: 10px 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  justify-content: space-around;
+  background-color: #4caf50;
+  padding: 10px;
 }
 
-.logo {
-  font-size: 18px;
-}
-
-.navLinks {
-  display: flex;
-  gap: 10px;
-}
-
-.navLinks a {
-  color: #88c0d0;
+.navItem {
+  color: white;
   text-decoration: none;
-  font-size: 14px;
-  transition: color 0.3s;
+  font-weight: bold;
+  padding: 10px;
+  transition: color 0.3s ease;
 }
 
-.navLinks a:hover {
-  color: #eceff4;
+.navItem:hover {
+  color: #d4f7d4;
 }
 
-/* Адаптивність */
-@media (max-width: 768px) {
-  .navLinks {
-    display: none; /* Для мобільних можемо додати бургер-меню */
-  }
+.active {
+  text-decoration: underline;
+  color: #fff700;
 }

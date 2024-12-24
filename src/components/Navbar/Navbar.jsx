@@ -1,24 +1,34 @@
 import React from "react";
+import { NavLink } from "react-router-dom";
 import styles from "./Navbar.module.css";
 
 function Navbar() {
   return (
     <nav className={styles.navbar}>
-      <h1 className={styles.logo}>💰 Фінансовий Виклик</h1>
-      <ul className={styles.navLinks}>
-        <li>
-          <a href="#income">Дохід</a>
-        </li>
-        <li>
-          <a href="#expenses">Витрати</a>
-        </li>
-        <li>
-          <a href="#goals">Цілі</a>
-        </li>
-        <li>
-          <a href="#stats">Статистика</a>
-        </li>
-      </ul>
+      <NavLink
+        to="/income"
+        className={({ isActive }) =>
+          isActive ? `${styles.navItem} ${styles.active}` : styles.navItem
+        }
+      >
+        Дохід
+      </NavLink>
+      <NavLink
+        to="/expenses"
+        className={({ isActive }) =>
+          isActive ? `${styles.navItem} ${styles.active}` : styles.navItem
+        }
+      >
+        Витрати
+      </NavLink>
+      <NavLink
+        to="/dashboard"
+        className={({ isActive }) =>
+          isActive ? `${styles.navItem} ${styles.active}` : styles.navItem
+        }
+      >
+        Головна
+      </NavLink>
     </nav>
   );
 }
