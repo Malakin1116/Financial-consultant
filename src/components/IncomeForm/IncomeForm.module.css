@@ -10,6 +10,24 @@
 .input {
   margin-right: 10px;
   padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.input:focus {
+  border-color: #4caf50;
+}
+
+.error {
+  border-color: red;
+}
+
+.errorText {
+  color: red;
+  font-size: 12px;
+  margin-top: 5px;
 }
 
 .button {

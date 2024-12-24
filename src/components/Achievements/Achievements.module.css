@@ -1,0 +1,33 @@
+.container {
+  background-color: #3b4252;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+h2 {
+  text-align: center;
+  color: #d08770;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+li {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 16px;
+  color: #4c566a;
+}
+
+li.unlocked {
+  color: #eceff4;
+}
+
+li svg {
+  margin-right: 10px;
+  font-size: 20px;
+}
