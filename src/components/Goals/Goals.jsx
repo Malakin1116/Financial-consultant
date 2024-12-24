@@ -13,33 +13,42 @@ function Goals({ income }) {
     const amount = parseFloat(goalAmount);
     const name = templateGoal || goalName;
     if (name && !isNaN(amount)) {
-      setGoals([...goals, { name, amount, savingPercent, progress: 0 }]);
+      setGoals([
+        ...goals,
+        { id: Date.now(), name, amount, savingPercent, progress: 0 },
+      ]);
     }
     setGoalName("");
     setGoalAmount("");
     setTemplateGoal("");
   };
 
-  const handleDeleteGoal = (index) => {
-    const updatedGoals = goals.filter((_, i) => i !== index);
-    setGoals(updatedGoals);
+  const handleDeleteGoal = (id) => {
+    setGoals(goals.filter((goal) => goal.id !== id));
+  };
+
+  const calculateProgress = (goal) => {
+    const dailySavings = (income / 30) * (goal.savingPercent / 100);
+    const daysToGoal = Math.ceil(goal.amount / dailySavings);
+    const progress =
+      Math.min((dailySavings * daysToGoal) / goal.amount, 1) * 100;
+
+    return { dailySavings, daysToGoal, progress };
   };
 
   return (
     <div className={styles.container}>
       <h2>Фінансові цілі</h2>
-      <ul>
-        {goals.map((goal, index) => {
-          const dailySavings = (income / 30) * (goal.savingPercent / 100);
-          const daysToGoal = Math.ceil(goal.amount / dailySavings);
-          const progress =
-            Math.min((dailySavings * daysToGoal) / goal.amount, 1) * 100;
-
+      <ul className={styles.goalList}>
+        {goals.map((goal) => {
+          const { dailySavings, daysToGoal, progress } =
+            calculateProgress(goal);
           return (
-            <li key={index} className={styles.goal}>
+            <li key={goal.id} className={styles.goal}>
               <div>
-                {goal.name}: {goal.amount} грн ({goal.savingPercent}% доходу) —{" "}
-                {daysToGoal} днів
+                <strong>{goal.name}</strong>: {goal.amount} грн (
+                {goal.savingPercent}% доходу) —{" "}
+                <span className={styles.days}>{daysToGoal} днів</span>
               </div>
               <div className={styles.progressBar}>
                 <div
@@ -49,7 +58,7 @@ function Goals({ income }) {
               </div>
               <button
                 className={styles.deleteButton}
-                onClick={() => handleDeleteGoal(index)}
+                onClick={() => handleDeleteGoal(goal.id)}
               >
                 Видалити
               </button>
@@ -57,7 +66,7 @@ function Goals({ income }) {
           );
         })}
       </ul>
-      <form onSubmit={handleAddGoal}>
+      <form onSubmit={handleAddGoal} className={styles.form}>
         <label className={styles.label}>Шаблон цілі:</label>
         <select
           value={templateGoal}

@@ -1,18 +1,33 @@
 .container {
+  background-color: #eceff4;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   margin-top: 20px;
 }
 
+.goalList {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 20px;
+}
+
 .goal {
-  margin-bottom: 15px;
-  position: relative;
+  margin-bottom: 10px;
+  padding: 10px;
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
 }
 
 .progressBar {
-  width: 100%;
-  background-color: #e0e0e0;
-  border-radius: 4px;
-  overflow: hidden;
   height: 10px;
+  background-color: #d8dee9;
+  border-radius: 5px;
+  overflow: hidden;
+  margin: 5px 0;
 }
 
 .progress {
@@ -21,53 +36,46 @@
   transition: width 0.3s ease;
 }
 
+.deleteButton {
+  align-self: flex-end;
+  background-color: #f44336;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.deleteButton:hover {
+  background-color: #d32f2f;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
 .input {
-  margin: 5px 0;
-  padding: 8px;
-  width: 100%;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  outline: none;
-}
-
-.input:focus {
-  border-color: #4caf50;
-}
-
-.label {
-  display: block;
-  margin-top: 10px;
-  margin-bottom: 5px;
-  font-weight: bold;
+  padding: 10px;
+  border: 1px solid #d8dee9;
+  border-radius: 5px;
 }
 
 .button {
-  padding: 8px 15px;
+  padding: 10px;
   background-color: #4caf50;
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  margin-top: 10px;
 }
 
 .button:hover {
   background-color: #45a049;
 }
 
-.deleteButton {
-  padding: 5px 10px;
-  background-color: #e74c3c;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  margin-top: 5px;
-  position: absolute;
-  top: 0;
-  right: 0;
-}
-
-.deleteButton:hover {
-  background-color: #c0392b;
+.days {
+  font-weight: bold;
+  color: #333;
 }
