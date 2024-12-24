@@ -1,77 +1,117 @@
 import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import Navbar from "./components/Navbar/Navbar";
+import Footer from "./components/Footer/Footer";
 import IncomeForm from "./components/IncomeForm/IncomeForm";
 import ExpenseForm from "./components/ExpenseForm/ExpenseForm";
 import Dashboard from "./components/Dashboard/Dashboard";
-import Assets from "./components/Assets/Assets";
 import Goals from "./components/Goals/Goals";
 import Achievements from "./components/Achievements/Achievements";
+import ExpenseAnalysis from "./components/ExpenseAnalysis/ExpenseAnalysis";
+import FilterSelector from "./components/FilterSelector/FilterSelector";
 import "./App.css";
 
 function App() {
-  const [income, setIncome] = useState(0);
-  const [expenses, setExpenses] = useState([]);
-  const [xp, setXp] = useState(0); // Досвід користувача
-  const [level, setLevel] = useState(1); // Рівень користувача
-  const [timeSpent, setTimeSpent] = useState(0); // Час у програмі (хвилини)
-  const [newLevel, setNewLevel] = useState(false); // Прапорець для анімації рівня
+  const [income, setIncome] = useState(
+    () => JSON.parse(localStorage.getItem("income")) || 0
+  );
+  const [expenses, setExpenses] = useState(
+    () => JSON.parse(localStorage.getItem("expenses")) || []
+  );
+  const [xp, setXp] = useState(
+    () => JSON.parse(localStorage.getItem("xp")) || 0
+  );
+  const [level, setLevel] = useState(
+    () => Math.floor((JSON.parse(localStorage.getItem("xp")) || 0) / 100) + 1
+  );
+  const [filter, setFilter] = useState("month"); // Фільтр: день, тиждень, місяць, всі
 
-  // Оновлюємо час у програмі кожну хвилину
+  // Збереження даних
   useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeSpent((prev) => prev + 1);
-      setXp((prev) => prev + 1); // +1 XP кожну хвилину
-    }, 60000); // 60,000 мс = 1 хвилина
+    localStorage.setItem("income", JSON.stringify(income));
+    localStorage.setItem("expenses", JSON.stringify(expenses));
+    localStorage.setItem("xp", JSON.stringify(xp));
+  }, [income, expenses, xp]);
 
-    return () => clearInterval(timer); // Очищення таймера
+  // Підрахунок досвіду
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setXp((prevXp) => prevXp + 1);
+    }, 60000); // Додаємо 1 XP кожну хвилину
+
+    return () => clearInterval(interval);
   }, []);
 
-  // Оновлюємо рівень залежно від XP
+  // Оновлення рівня
   useEffect(() => {
-    const newLevel = Math.floor(xp / 100) + 1; // 100 XP = 1 рівень
-    if (newLevel > level) {
-      setLevel(newLevel);
-      setNewLevel(true);
-      setTimeout(() => setNewLevel(false), 3000); // Анімація триває 3 секунди
-    }
+    setLevel(Math.floor(xp / 100) + 1);
   }, [xp]);
 
+  // Фільтрування витрат
+  const filteredExpenses = expenses.filter((expense) => {
+    const today = new Date();
+    const expenseDate = new Date(expense.date || Date.now());
+
+    if (filter === "day") {
+      return expenseDate.toDateString() === today.toDateString();
+    } else if (filter === "week") {
+      const weekStart = new Date(
+        today.setDate(today.getDate() - today.getDay())
+      );
+      return expenseDate >= weekStart;
+    } else if (filter === "month") {
+      return (
+        expenseDate.getMonth() === today.getMonth() &&
+        expenseDate.getFullYear() === today.getFullYear()
+      );
+    }
+    return true; // "all"
+  });
+
+  // Скидання даних
+  const handleReset = () => {
+    const confirmReset = window.confirm(
+      "Ви впевнені, що хочете скинути всі дані?"
+    );
+    if (confirmReset) {
+      localStorage.clear();
+      setIncome(0);
+      setExpenses([]);
+      setXp(0);
+      setLevel(1);
+    }
+  };
+
   return (
-    <div className="game-app">
-      <header>
-        <h1>Фінансовий виклик</h1>
+    <div className="app-container">
+      <Navbar />
+      <header className="app-header">
+        <h1>FinTrack</h1>
         <div className="stats">
-          <div className="level">Рівень: {level}</div>
-          <div className="time-spent">Час у додатку: {timeSpent} хв</div>
+          <p>Рівень: {level}</p>
+          <p>Досвід: {xp}</p>
         </div>
-        <div className="xp-bar">
-          <span>Досвід: {xp % 100}/100</span>
-          <div className="progress-bar">
-            <div className="progress" style={{ width: `${xp % 100}%` }}></div>
-          </div>
-        </div>
+        <button className="reset-button" onClick={handleReset}>
+          Оновити дані
+        </button>
       </header>
-
-      {/* Анімація нового рівня */}
-      {newLevel && (
-        <motion.div
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1.2, opacity: 1 }}
-          transition={{ duration: 0.5 }}
-          className="level-up"
-        >
-          🎉 Вітаємо! Ви досягли {level} рівня! 🎉
-        </motion.div>
-      )}
-
-      <main>
-        <IncomeForm setIncome={setIncome} />
-        <ExpenseForm expenses={expenses} setExpenses={setExpenses} />
-        <Dashboard income={income} expenses={expenses} />
-        <Goals income={income} />
-        <Assets />
-        <Achievements xp={xp} />
+      <main className="app-main">
+        {/* <FilterSelector filter={filter} setFilter={setFilter} /> */}
+        <section className="section">
+          <IncomeForm setIncome={setIncome} />
+        </section>
+        <section className="section">
+          <ExpenseForm expenses={expenses} setExpenses={setExpenses} />
+          <ExpenseAnalysis expenses={filteredExpenses} income={income} />
+        </section>
+        <section className="section">
+          <Goals income={income} />
+        </section>
+        <section className="section">
+          <Dashboard income={income} expenses={filteredExpenses} />
+          <Achievements xp={xp} />
+        </section>
       </main>
+      <Footer />
     </div>
   );
 }

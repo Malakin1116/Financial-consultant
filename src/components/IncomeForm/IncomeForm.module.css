@@ -1,44 +1,85 @@
+.container {
+  background-color: #f4f4f9;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 15px;
+}
+
 .form {
-  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
 }
 
-.label {
-  display: block;
-  margin-bottom: 5px;
+.input,
+.select {
+  width: 100%;
+  max-width: 300px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 16px;
 }
 
-.input {
-  margin-right: 10px;
-  padding: 5px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  outline: none;
-  transition: border-color 0.3s ease;
-}
-
-.input:focus {
-  border-color: #4caf50;
-}
-
-.error {
-  border-color: red;
-}
-
-.errorText {
-  color: red;
-  font-size: 12px;
-  margin-top: 5px;
-}
-
-.button {
-  padding: 5px 10px;
+.addButton {
   background-color: #4caf50;
   color: white;
   border: none;
+  padding: 10px 20px;
+  font-size: 16px;
   border-radius: 5px;
   cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
-.button:hover {
+.addButton:hover {
   background-color: #45a049;
+}
+
+.incomeList {
+  margin-top: 20px;
+}
+
+.incomeList h3 {
+  text-align: center;
+  color: #333;
+}
+
+.incomeList ul {
+  list-style: none;
+  padding: 0;
+}
+
+.incomeItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #ddd;
+}
+
+.incomeItem span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #333;
+}
+
+.deleteButton {
+  background: none;
+  border: none;
+  color: #d9534f;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.deleteButton:hover {
+  color: #c9302c;
 }

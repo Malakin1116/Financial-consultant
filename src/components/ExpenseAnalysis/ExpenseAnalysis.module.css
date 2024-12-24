@@ -1,0 +1,37 @@
+.container {
+  background-color: #eceff4;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.categories {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  justify-content: space-between;
+}
+
+.categoryCard {
+  flex: 1 1 calc(45% - 10px);
+  max-width: 200px;
+  padding: 15px;
+  border-radius: 10px;
+  color: white;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.categoryHeader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.amount {
+  font-size: 20px;
+  font-weight: bold;
+}

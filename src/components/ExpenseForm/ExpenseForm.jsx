@@ -2,53 +2,74 @@ import React, { useState } from "react";
 import styles from "./ExpenseForm.module.css";
 
 function ExpenseForm({ expenses, setExpenses }) {
-  const [expenseName, setExpenseName] = useState("");
-  const [expenseAmount, setExpenseAmount] = useState("");
-  const [expenseType, setExpenseType] = useState("one-time");
+  const [amount, setAmount] = useState("");
+  const [category, setCategory] = useState("");
+  const [customCategory, setCustomCategory] = useState("");
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const amount = parseFloat(expenseAmount);
-    if (expenseName && !isNaN(amount)) {
-      setExpenses([
-        ...expenses,
-        { name: expenseName, amount, type: expenseType },
-      ]);
+  // Попередньо визначені категорії витрат
+  const predefinedCategories = [
+    "Їжа",
+    "Транспорт",
+    "Оренда",
+    "Розваги",
+    "Авто",
+    "Інше",
+  ];
+
+  const handleAddExpense = () => {
+    // Вибір фінальної категорії (якщо "Інше", беремо customCategory)
+    const finalCategory = category === "Інше" ? customCategory : category;
+
+    if (amount && finalCategory) {
+      const newExpense = {
+        id: Date.now(),
+        amount: parseFloat(amount),
+        category: finalCategory,
+      };
+      setExpenses((prev) => [...prev, newExpense]);
+      setAmount("");
+      setCategory("");
+      setCustomCategory("");
+    } else {
+      alert("Будь ласка, заповніть усі поля!");
     }
-    setExpenseName("");
-    setExpenseAmount("");
-    setExpenseType("one-time");
   };
 
   return (
-    <form onSubmit={handleSubmit} className={styles.form}>
-      <label className={styles.label}>Введіть витрати:</label>
-      <input
-        type="text"
-        value={expenseName}
-        onChange={(e) => setExpenseName(e.target.value)}
-        placeholder="Назва витрат"
-        className={styles.input}
-      />
+    <div className={styles.container}>
+      <h3>Додати витрати</h3>
       <input
         type="number"
-        value={expenseAmount}
-        onChange={(e) => setExpenseAmount(e.target.value)}
         placeholder="Сума витрат"
+        value={amount}
+        onChange={(e) => setAmount(e.target.value)}
         className={styles.input}
       />
       <select
-        value={expenseType}
-        onChange={(e) => setExpenseType(e.target.value)}
-        className={styles.input}
+        value={category}
+        onChange={(e) => setCategory(e.target.value)}
+        className={styles.select}
       >
-        <option value="one-time">Разова</option>
-        <option value="recurring">Постійна</option>
+        <option value="">Оберіть категорію</option>
+        {predefinedCategories.map((cat, index) => (
+          <option key={index} value={cat}>
+            {cat}
+          </option>
+        ))}
       </select>
-      <button type="submit" className={styles.button}>
+      {category === "Інше" && (
+        <input
+          type="text"
+          placeholder="Введіть власну категорію"
+          value={customCategory}
+          onChange={(e) => setCustomCategory(e.target.value)}
+          className={styles.input}
+        />
+      )}
+      <button onClick={handleAddExpense} className={styles.addButton}>
         Додати
       </button>
-    </form>
+    </div>
   );
 }
 
