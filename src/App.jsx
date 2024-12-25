@@ -37,7 +37,7 @@ function App() {
             <Route path="/expenses" element={<ExpensesPage />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/control" element={<FinanceControlPage />} />
-            <Route path="*" element={<Navigate to="/income" />} />
+            <Route path="*" element={<Navigate to="/control" />} />
           </Routes>
 
           {/* Кнопка для скидання */}
