@@ -1,8 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import styles from "./FinanceControlPage.module.css";
 
-/** Кастомний хук для зчитування/запису в localStorage */
+/**
+ * Кастомний хук для зчитування/запису в localStorage
+ * і "запобіжник" від повторних викликів у StrictMode.
+ */
 function useLocalStorage(key, initialValue) {
+  const isMountedRef = useRef(false);
+
   const [storedValue, setStoredValue] = useState(() => {
     try {
       const item = localStorage.getItem(key);
@@ -13,10 +18,32 @@ function useLocalStorage(key, initialValue) {
     }
   });
 
+  // При першому реальному монтуванні (без повтору Strict Mode) будемо оновлювати localStorage
+  useEffect(() => {
+    if (!isMountedRef.current) {
+      isMountedRef.current = true;
+      return; // пропускаємо перший “подвійний” виклик
+    }
+    try {
+      localStorage.setItem(key, JSON.stringify(storedValue));
+    } catch (error) {
+      console.error("Помилка запису в localStorage:", error);
+    }
+  }, [storedValue, key]);
+
+  // Зберігаємо нове значення і в localStorage
   const setValue = (value) => {
     try {
-      setStoredValue(value);
-      localStorage.setItem(key, JSON.stringify(value));
+      if (typeof value === "function") {
+        setStoredValue((prev) => {
+          const newVal = value(prev);
+          localStorage.setItem(key, JSON.stringify(newVal));
+          return newVal;
+        });
+      } else {
+        setStoredValue(value);
+        localStorage.setItem(key, JSON.stringify(value));
+      }
     } catch (error) {
       console.error("Помилка запису в localStorage:", error);
     }
@@ -37,7 +64,7 @@ function FinanceControlPage() {
     }));
   };
 
-  // Зберігаємо у localStorage
+  // Зберігаємо у localStorage (через наш хук)
   const [dailyData, setDailyData] = useLocalStorage(
     "dailyData",
     createInitialData()
@@ -58,30 +85,42 @@ function FinanceControlPage() {
     setIsModalOpen(true);
   };
 
-  // Додавання запису
+  // Додавання запису (дохід/витрата)
   const handleAddRecord = () => {
     const { amount, description } = modalInput;
-    if (!amount || isNaN(parseFloat(amount))) {
-      alert("Введіть коректну суму.");
+    const parsedAmount = parseFloat(amount);
+
+    // 1) Перевірка на валідність суми
+    if (!amount || isNaN(parsedAmount)) {
+      alert("Введіть коректну суму (число).");
       return;
     }
-    if (!description.trim()) {
-      alert("Введіть опис.");
+    if (parsedAmount <= 0) {
+      alert("Сума повинна бути більшою за 0!");
       return;
     }
 
+    // 2) Опис не може бути порожнім
+    if (!description.trim()) {
+      alert("Введіть опис операції.");
+      return;
+    }
+
+    // Створюємо новий запис
     const newRecord = {
       id: Date.now(),
-      amount: parseFloat(amount),
+      amount: parsedAmount,
       description: description.trim(),
     };
 
+    // Оновлюємо дані конкретного дня
     setDailyData((prevData) => {
       const updated = [...prevData];
       updated[selectedDay - 1][modalType].push(newRecord);
       return updated;
     });
 
+    // Закриваємо модалку, чистимо поля
     setModalInput({ amount: "", description: "" });
     setIsModalOpen(false);
   };
@@ -97,10 +136,17 @@ function FinanceControlPage() {
     });
   };
 
+  // Скинути всі дані (обнулити localStorage)
+  const handleResetAllData = () => {
+    if (window.confirm("Ви впевнені, що хочете видалити всі дані?")) {
+      setDailyData(createInitialData());
+    }
+  };
+
   // Дані обраного дня
   const currentDayData = dailyData[selectedDay - 1];
 
-  // Підрахунок загальних сум
+  // Підрахунок загальних сум за обраний день
   const totalIncome = currentDayData.income.reduce(
     (sum, item) => sum + item.amount,
     0
@@ -111,14 +157,36 @@ function FinanceControlPage() {
   );
   const balance = totalIncome - totalExpense;
 
+  // Сума доходів/витрат/балансу за всі 31 день (загальний підсумок)
+  const totalMonthIncome = dailyData.reduce(
+    (acc, day) => acc + day.income.reduce((s, rec) => s + rec.amount, 0),
+    0
+  );
+  const totalMonthExpense = dailyData.reduce(
+    (acc, day) => acc + day.expense.reduce((s, rec) => s + rec.amount, 0),
+    0
+  );
+  const totalMonthBalance = totalMonthIncome - totalMonthExpense;
+
   return (
     <div className={styles.container}>
       <h1>Контроль фінансів</h1>
 
+      {/* Кнопка "Скинути всі дані" (опційна) */}
+      <div style={{ textAlign: "center", margin: "20px 0" }}>
+        <button
+          onClick={handleResetAllData}
+          className={styles.deleteButton}
+          style={{ padding: "10px 20px" }}
+        >
+          Скинути всі дані
+        </button>
+      </div>
+
       {/* Картки днів */}
       <div className={styles.daysContainer}>
         {Array.from({ length: TOTAL_DAYS }, (_, i) => i + 1).map((day) => {
-          // Підрахунки (для відображення в коробці дня)
+          // Підрахунки (для відображення у картці дня)
           const dayIncome = dailyData[day - 1].income.reduce(
             (sum, item) => sum + item.amount,
             0
@@ -128,7 +196,7 @@ function FinanceControlPage() {
             0
           );
 
-          // Тут відобразимо всі записи цього дня (щоб було видно, наприклад, "яйця 200 грн")
+          // Усі записи цього дня
           const recordsOfTheDay = [
             ...dailyData[day - 1].income.map((r) => ({
               ...r,
@@ -174,7 +242,7 @@ function FinanceControlPage() {
                 </button>
               </div>
 
-              {/* СПИСОК УСІХ ЗАПИСІВ (description + amount) за цей день */}
+              {/* Список записів дня (опис + сума) */}
               {recordsOfTheDay.length > 0 && (
                 <div style={{ marginTop: "15px" }}>
                   <strong>Записи:</strong>
@@ -211,12 +279,29 @@ function FinanceControlPage() {
         </p>
       </div>
 
-      {/* Так само зберігаємо відображення окремих списків з можливістю видалити */}
+      {/* Підсумок за всі дні (місячний) */}
+      <div className={styles.summary} style={{ marginTop: "30px" }}>
+        <h2>Загальний підсумок (за {TOTAL_DAYS} днів)</h2>
+        <p>Доходи: {totalMonthIncome} грн</p>
+        <p>Витрати: {totalMonthExpense} грн</p>
+        <p>
+          Баланс:{" "}
+          <strong
+            style={{
+              color: totalMonthBalance >= 0 ? "green" : "red",
+            }}
+          >
+            {totalMonthBalance} грн
+          </strong>
+        </p>
+      </div>
+
+      {/* Окремі списки доходів/витрат за вибраний день (Ваша стара логіка) */}
       <div style={{ marginTop: "20px" }}>
         {/* Доходи */}
         {currentDayData.income.length > 0 && (
           <>
-            <h3>Доходи:</h3>
+            <h3>Доходи (День {selectedDay}):</h3>
             <ul className={styles.recordsList}>
               {currentDayData.income.map((record) => (
                 <li key={record.id} className={styles.recordItem}>
@@ -238,7 +323,7 @@ function FinanceControlPage() {
         {/* Витрати */}
         {currentDayData.expense.length > 0 && (
           <>
-            <h3>Витрати:</h3>
+            <h3>Витрати (День {selectedDay}):</h3>
             <ul className={styles.recordsList}>
               {currentDayData.expense.map((record) => (
                 <li key={record.id} className={styles.recordItem}>
