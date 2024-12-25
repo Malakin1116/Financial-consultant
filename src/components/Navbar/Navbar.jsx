@@ -1,4 +1,3 @@
-import React from "react";
 import { NavLink } from "react-router-dom";
 import styles from "./Navbar.module.css";
 
@@ -28,6 +27,14 @@ function Navbar() {
         }
       >
         Головна
+      </NavLink>
+      <NavLink
+        to="/control"
+        className={({ isActive }) =>
+          isActive ? `${styles.navItem} ${styles.active}` : styles.navItem
+        }
+      >
+        Контроль фінансів
       </NavLink>
     </nav>
   );

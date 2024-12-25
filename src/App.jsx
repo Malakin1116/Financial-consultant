@@ -10,6 +10,7 @@ import Dashboard from "./pages/Dashboard";
 import Navbar from "./components/Navbar/Navbar";
 import Footer from "./components/Footer/Footer";
 import "./App.css";
+import FinanceControlPage from "./pages/FinanceControlPage.jsx";
 
 function App() {
   // Функція для скидання даних
@@ -35,6 +36,7 @@ function App() {
             <Route path="/income" element={<IncomePage />} />
             <Route path="/expenses" element={<ExpensesPage />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/control" element={<FinanceControlPage />} />
             <Route path="*" element={<Navigate to="/income" />} />
           </Routes>
 
