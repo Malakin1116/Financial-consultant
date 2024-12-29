@@ -36,6 +36,14 @@ function Navbar() {
       >
         Контроль фінансів
       </NavLink>
+      <NavLink
+        to="/crypto" // Новый маршрут для страницы отслеживания криптовалюты
+        className={({ isActive }) =>
+          isActive ? `${styles.navItem} ${styles.active}` : styles.navItem
+        }
+      >
+        Криптовалюта
+      </NavLink>
     </nav>
   );
 }
