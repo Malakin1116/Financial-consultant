@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -13,6 +14,9 @@ import CryptoPage from "./pages/CryptoPage.jsx";
 import NotFoundPage from "./pages/NotFoundPage.jsx";
 
 function App() {
+  // Використовуємо локальний стан для примусового оновлення
+  const [resetKey, setResetKey] = useState(0);
+
   // Функція для скидання даних
   const handleResetLocalStorage = () => {
     const confirmReset = window.confirm(
@@ -20,13 +24,13 @@ function App() {
     );
     if (confirmReset) {
       localStorage.clear();
-      window.location.reload(); // Оновлює сторінку після скидання
+      setResetKey((prevKey) => prevKey + 1); // Примусове оновлення компоненту через зміну ключа
     }
   };
 
   return (
     <Router>
-      <div className="app-container">
+      <div className="app-container" key={resetKey}>
         {/* Навігація */}
         <Navbar />
 
