@@ -7,7 +7,7 @@ import Summary from "../components/Summary/Summary";
 import styles from "./FinanceControlPage.module.css";
 
 function FinanceControlPage() {
-  const [currentDate, setCurrentDate] = useState(new Date());
+  const [currentDate] = useState(new Date());
   const [selectedMonth, setSelectedMonth] = useState(currentDate.getMonth());
   const [selectedYear, setSelectedYear] = useState(currentDate.getFullYear());
   const [selectedDay, setSelectedDay] = useState(currentDate.getDate());

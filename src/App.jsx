@@ -1,4 +1,9 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import Dashboard from "./pages/Dashboard";
 import Navbar from "./components/Navbar/Navbar";
 import Footer from "./components/Footer/Footer";
@@ -28,6 +33,7 @@ function App() {
         {/* Основний контент */}
         <main className="app-main">
           <Routes>
+            <Route path="/" element={<Navigate to="/control" replace />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/control" element={<FinanceControlPage />} />
             <Route path="/crypto" element={<CryptoPage />} />
